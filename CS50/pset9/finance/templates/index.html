@@ -1,0 +1,75 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    Portfolio
+{% endblock %}
+
+{% block main %}
+    <h1 class="mb-4">{{ username }}'s Portfolio</h1>
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-10">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Symbol</th>
+                            <th>Name</th>
+                            <th>Shares</th>
+                            <th>Price</th>
+                            <th>Total Value</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for stock in stocks %}
+                            <tr>
+                                <td>{{ stock["symbol"] }}</td>
+                                <td>{{ stock["name"] }}</td>
+                                <td>{{ stock["shares_owned"] }}</td>
+                                <td>{{ stock["price"] }}</td>
+                                <td>{{ stock["value"] }}</td>
+                                <td>
+                                    <div class="input-group">
+                                        <form action="/buy" method="post">
+                                            <input type="hidden" name="symbol" value="{{ stock["symbol"] }}">
+                                            <div class="d-flex">
+                                                <input type="number" class="form-control" name="shares" placeholder="Buy Shares" required>
+                                                <div class="input-group justify-content-between">
+                                                    <button type="submit" class="btn btn-primary">Buy</button>
+                                                </div>
+                                            </div>
+                                        </form>
+                                        <form action="/sell" method="post">
+                                            <input type="hidden" name="symbol" value="{{ stock["symbol"] }}">
+                                            <div class="d-flex">
+                                                <input type="number" class="form-control" name="shares" placeholder="Sell Shares" required>
+                                                <div class="input-group justify-content-between">
+                                                    <button type="submit" class="btn btn-primary">Sell</button>
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </td>
+
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-6">
+                <div class="d-flex flex-column">
+                    <h3>Cash Balance:</h3>
+                    <p>{{ cash_balance }}</p>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="d-flex flex-column">
+                    <h3>Total Portfolio Value:</h3>
+                    <p>{{ total_value }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

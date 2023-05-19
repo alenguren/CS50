@@ -1,0 +1,4 @@
+Prompt user for a value
+Name the value Height
+If the value given is less than 1 or greater than 8, ask again for the value
+Increase hash values per line

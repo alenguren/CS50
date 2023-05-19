@@ -1,0 +1,31 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    {{ name }} ({{ symbol }})
+{% endblock %}
+
+{% block main %}
+    <h1>{{ name }} ({{ symbol }})</h1>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Symbol</th>
+                <th>Name</th>
+                <th>Price</th>
+                <th>Shares Owned</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>{{ symbol }}</td>
+                <td>{{ name }}</td>
+                <td>{{ price }}</td>
+                <td>{{ shares_owned }}</td>
+                <td><a href="/buy" class="btn btn-primary">Buy</a></td>
+                <td><a href="/sell" class="btn btn-primary">Sell</a></td>
+            </tr>
+
+        </tbody>
+    </table>
+{% endblock %}

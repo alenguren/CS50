@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+
+<html lang="en">
+    <head>
+        <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500&display=swap" rel="stylesheet">
+        <link href="styles.css" rel="stylesheet">
+        <title>Trivia!</title>
+        <script>
+            // TODO: Add code to check answers to questions
+            // JavaScript code to check answers to questions
+            // Wait for the DOM to be fully loaded
+            document.addEventListener('DOMContentLoaded', function() {
+
+                // Add a click event listener to the button with class "correct"
+                let correct = document.querySelector('.correct');
+                correct.addEventListener('click', function() {
+                    correct.style.backgroundColor = 'green';
+                    // Display feedback for the user
+                    document.querySelector('#feedback1').innerHTML = 'Correct! :)';
+                });
+
+                // Add click event listeners to all buttons with class "incorrect"
+                let incorrects = document.querySelectorAll('.incorrect');
+                for (let i = 0; i < incorrects.length; i++) {
+                    incorrects[i].addEventListener('click', function() {
+                        incorrects[i].style.backgroundColor = 'red';
+                        // Display feedback for the user
+                        document.querySelector('#feedback1').innerHTML = 'Incorrect! :(';
+
+                    });
+                }
+
+                // Add a click event listener to the button with ID "check"
+                document.querySelector('#check').addEventListener('click', function() {
+                    let input = document.querySelector('input');
+                    // Array of correct answers to the free response question
+                    let correctAnswers = ['Final Fantasy 7', 'Final Fantasy VII', 'FF7', 'FFVII', 'final fantasy 7', 'final fantasy vii', 'ff7', 'ffvii', '7', 'vii'];
+
+                    // Check if the user's answer is in the array of correct answers
+                    if (correctAnswers.includes(input.value.trim().toLowerCase())) {
+                        input.style.backgroundColor = 'green';
+                        // Display feedback for the user
+                        document.querySelector('#feedback2').innerHTML = 'Correct!';
+                    } else {
+                        input.style.backgroundColor = 'red';
+                        // Display feedback for the user
+                        document.querySelector('#feedback2').innerHTML = 'Incorrect!';
+                    }
+                });
+            });
+        </script>
+    </head>
+    <body>
+        <div class="header">
+            <h1>Trivia!</h1>
+        </div>
+
+        <div class="container">
+            <div class="section">
+                <h2>Part 1: Multiple Choice </h2>
+                <hr>
+                <!-- TODO: Add multiple choice question here -->
+                <h3>You're 3rd place right now in a race. What place will you be in when you pass the person in 2nd place? </h3>
+
+                <!-- Buttons for the answer choices -->
+                <button class="incorrect">1st</button>
+                <button class="correct">2nd</button>
+                <button class="incorrect">3rd</button>
+                <button class="incorrect">Last place</button>
+
+                <p id="feedback1"></p>
+
+            </div>
+
+            <div class="section">
+                <h2>Part 2: Free Response</h2>
+                <hr>
+                <!-- TODO: Add free response question here -->
+                <!-- Free response question -->
+                <h3>Which Final Fantasy game is the best one of the saga?</h3>
+                <!-- Input field for the user's answer -->
+                <input type="text">
+                <button id="check">Check Answer</button>
+
+                <p id="feedback2"></p>
+
+            </div>
+        </div>
+    </body>
+</html>

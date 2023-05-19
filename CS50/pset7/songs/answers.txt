@@ -1,0 +1,30 @@
+If we have a database called "songs.db" that contains the top 100 songs of one person from 2018.
+We can use this information to estimate their general mood
+by looking at the average "energy", "valence", and "danceability" of those top 100 songs.
+
+For example, if their top songs are mostly
+high-energy, upbeat, and danceable,
+we can assume that they generally like energetic and positive music.
+
+However, this method may not be completely accurate for a few reasons.
+First, the top 100 songs may not represent the person's overall music taste,
+as they could have been influenced by temporary trends or moods.
+Second, there may be individual preferences and nuances that affect their listening habits.
+
+To get a better understanding of a person's music taste and mood,
+we could consider additional factors like the genre, tempo, or lyrics of their top songs.
+We could also look at qualitative data like user-generated playlists, favorite artists, or listening contexts.
+This would provide a more complete and personalized representation of the person's "audio aura."
+
+If we get this example to SQLite we could have a query like this:
+
+SELECT AVG(energy) AS avg_energy, AVG(valence) AS avg_valence, AVG(danceability) AS avg_danceability, COUNT(*) AS num_songs FROM songs WHERE listener_id = 1234 ORDER BY popularity DESC LIMIT 100;
+
+So, let's say we have a database of songs with information like energy, valence, and danceability.
+If we want to find out the top 100 songs of a specific listener, we can use an SQL query with their listener ID.
+Then, we can calculate the average energy, valence, and danceability of those songs and count how many songs are in the top 100 list.
+
+To get even more information about the listener's audio aura, we can add more columns to our songs table that tell us things like
+the genre, tempo, and lyrics of each song.
+We can use these columns in our SQL queries to group and analyze the data based on different factors.
+Then, we can calculate the listener's audio aura based on a more complete set of criteria that takes into account their individual preferences and nuances.
