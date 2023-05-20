@@ -126,6 +126,7 @@ function update() {
       // Collision detected
       coins.splice(i, 1);
       score++;
+      updateScore();
     }
 
     // Remove coins that have fallen off the screen
@@ -156,11 +157,6 @@ function update() {
       coin.frameCount = 0;
     }
   }
-
-  // Display score
-  ctx.fillStyle = "black";
-  ctx.font = "20px Arial";
-  ctx.fillText("Score: " + score, 10, 30);
 
   // Apply gravity to the player
   if (player.y + player.height < 450) {
@@ -249,3 +245,15 @@ function updatePlayerPosition() {
 
 // Generate a new coin every second
 setInterval(generateCoins, 100);
+
+// Update the score in the HTML
+function updateScore() {
+  var scoreElement = document.getElementById("score");
+  scoreElement.innerText = "Score: " + score;
+}
+
+// Update the live information in the HTML
+function updateLiveInformation() {
+  var liveElement = document.getElementById("live");
+  liveElement.innerText = "Lives: " + lives;
+}
