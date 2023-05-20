@@ -1,3 +1,4 @@
 #gameCanvas {
-    display: none;
+    display: block;
+    background-color: #000;
 }
