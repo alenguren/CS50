@@ -5,45 +5,28 @@ var coins = [];
 var score = 0;
 var gravity = 2;
 var isJumping = false;
-var currentBackgroundImage = "";
-var backgroundImage = new Image();
-var backgroundImageX = 0;
-var maxPlayerX;
-var originalBackgroundWidth; // Store the original width of the background image
-var backgroundScrollDirection = 0; // 0: No scrolling, -1: Scroll left, 1: Scroll right
+var backgroundImage;
+var backgroundX = 0;
+var lives = 3;
 
 var keys = {
   ArrowLeft: false,
   ArrowRight: false
 };
 
-// Coin sprite sheet
-var coinImage = new Image();
-coinImage.src = "images/coin_sprite_sheet.png";
-coinImage.addEventListener("load", init); // Wait for the image to load
+function initializeGame() {
+  document.getElementById("gameCanvas").style.display = "block";
+  init();
+}
 
 // Game initialization
 function init() {
   canvas = document.getElementById("gameCanvas");
   ctx = canvas.getContext("2d");
 
-  maxPlayerX = canvas.width / 2;
-
-  // Randomly select a background image
-  var randomIndex = Math.floor(Math.random() * 3) + 1;
-  currentBackgroundImage = "images/background" + randomIndex + ".jpg";
-
-  // Load and adjust the background image
-  backgroundImage.src = currentBackgroundImage;
-  backgroundImage.onload = function () {
-    var aspectRatio = backgroundImage.width / backgroundImage.height;
-    var targetWidth = canvas.height * aspectRatio;
-    var targetHeight = canvas.height;
-    backgroundImage.width = targetWidth;
-    backgroundImage.height = targetHeight;
-
-    originalBackgroundWidth = backgroundImage.width; // Store the original width
-  };
+  // Set canvas size to 800x600
+  canvas.width = 800;
+  canvas.height = 600;
 
   player = {
     x: canvas.width / 2 - 25, // Fixed X value at the bottom
@@ -57,140 +40,126 @@ function init() {
     maxJumpCount: 2 // Maximum number of jumps allowed
   };
 
-  // Start game loop
-  requestAnimationFrame(update);
+  // Randomly select a background image
+  var randomIndex = Math.floor(Math.random() * 3) + 1;
+  var currentBackgroundImage = "images/background" + randomIndex + ".jpg";
+
+  // Load background image
+  backgroundImage = new Image();
+  backgroundImage.src = currentBackgroundImage;
+  backgroundImage.onload = function () {
+    // Start game loop
+    requestAnimationFrame(update);
+  };
 
   // Event listeners
-  document.addEventListener("keydown", handleKeyDown);
-  document.addEventListener("keyup", handleKeyUp);
+  document.addEventListener("keydown", handleKeyPress);
+  document.addEventListener("keyup", handleKeyRelease);
 }
 
-// Generate random coins
-function generateCoins() {
-    var coinX;
-  
-    // Generate coins randomly outside the visible canvas area
-    coinX = Math.random() * (canvas.width + 200) - 100;
-  
-    var newCoin = {
-      x: coinX,
-      y: -20, // Start above the canvas
-      width: 50,
-      height: 80,
-      spriteWidth: 205, // Width of each frame in the sprite sheet
-      spriteHeight: 260, // Height of each frame in the sprite sheet
-      image: coinImage,
-      frameIndex: 0, // Current frame index
-      frameCount: 0, // Frame counter
-      speed: Math.random() * 3 + 1 // Random falling speed
-    };
-  
-    coins.push(newCoin);
-  }
-  
+// Generate a new coin box
+function generateCoin() {
+  var coinBox = {
+    x: Math.random() * (canvas.width - 50), // Random X position
+    y: -50, // Start above the canvas
+    width: 50,
+    height: 50,
+    color: "brown",
+    speed: Math.random() * 3 + 1, // Random speed between 1 and 4
+    coinCount: Math.floor(Math.random() * 3) + 1 // Random number of coins inside the box
+  };
+
+  coins.push(coinBox);
+}
+
 // Update game state
 function update() {
-    // Clear canvas
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-  
-    // Calculate the background image position
-    var backgroundOffsetX = backgroundImageX % originalBackgroundWidth;
-  
-    // Draw the background image
-    ctx.drawImage(
-      backgroundImage,
-      backgroundOffsetX,
-      0,
-      originalBackgroundWidth,
-      backgroundImage.height
-    );
-    ctx.drawImage(
-      backgroundImage,
-      backgroundOffsetX - originalBackgroundWidth,
-      0,
-      originalBackgroundWidth,
-      backgroundImage.height
-    );
-  
-    // Draw player
-    ctx.fillStyle = player.color;
-    ctx.fillRect(player.x, player.y, player.width, player.height);
-  
-    // Draw coins
-    for (var i = 0; i < coins.length; i++) {
-      var coin = coins[i];
-  
-      // Update coin position
-      coin.y += coin.speed;
-  
-      // Check collision with player
-      if (
-        player.x < coin.x + coin.width &&
-        player.x + player.width > coin.x &&
-        player.y < coin.y + coin.height &&
-        player.y + player.height > coin.y
-      ) {
-        // Collision detected
-        coins.splice(i, 1);
-        score++;
-      }
-  
-      // Remove coins that have fallen off the screen
-      if (coin.y > canvas.height) {
-        coins.splice(i, 1);
-      }
-  
-      // Draw animated coin
-      ctx.drawImage(
-        coin.image,
-        coin.frameIndex * coin.spriteWidth,
-        0,
-        coin.spriteWidth,
-        coin.image.height,
-        coin.x - backgroundImageX, // Adjust X position based on background scrolling
-        coin.y,
-        coin.width,
-        coin.height
-      );
-  
-      // Update frame index
-      coin.frameCount++;
-      if (coin.frameCount >= 5) {
-        coin.frameIndex++;
-        if (coin.frameIndex >= coin.image.width / coin.spriteWidth) {
-          coin.frameIndex = 0;
-        }
-        coin.frameCount = 0;
-      }
+  // Clear canvas
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  // Draw background
+  ctx.drawImage(backgroundImage, backgroundX, 0, backgroundImage.width, backgroundImage.height, 0, 0, canvas.width, canvas.height);
+
+  // Draw player
+  ctx.fillStyle = player.color;
+  ctx.fillRect(player.x, player.y, player.width, player.height);
+
+  // Generate coins randomly
+  if (Math.random() < 0.1) {
+    generateCoin();
+  }
+
+  // Draw coins
+  for (var i = 0; i < coins.length; i++) {
+    var coinBox = coins[i];
+
+    // Update coin box position
+    coinBox.y += coinBox.speed;
+
+    // Check collision with player
+    if (
+      player.x < coinBox.x + coinBox.width &&
+      player.x + player.width > coinBox.x &&
+      player.y < coinBox.y + coinBox.height &&
+      player.y + player.height > coinBox.y
+    ) {
+      // Collision detected
+      coins.splice(i, 1);
+      score += coinBox.coinCount; // Increase the score by the number of coins inside the box
     }
-  
-    // Display score
+
+    // Remove coin boxes that have fallen off the screen
+    if (coinBox.y > canvas.height) {
+      coins.splice(i, 1);
+    }
+
+    // Draw coin box
+    ctx.fillStyle = coinBox.color;
+    ctx.fillRect(coinBox.x, coinBox.y, coinBox.width, coinBox.height);
+
+    // Draw coins inside the box
+    var coinSize = 10;
+    var coinPadding = 5;
+    var coinStartX = coinBox.x + coinPadding;
+    var coinStartY = coinBox.y + coinPadding;
+    for (var j = 0; j < coinBox.coinCount; j++) {
+      ctx.fillStyle = "gold";
+      ctx.fillRect(
+        coinStartX + (coinSize + coinPadding) * j,
+        coinStartY,
+        coinSize,
+        coinSize
+      );
+    }
+
+    // Display lives and score
     ctx.fillStyle = "black";
     ctx.font = "20px Arial";
-    ctx.fillText("Score: " + score, 10, 30);
-  
-    // Apply gravity to the player
-    if (player.y + player.height < 450) {
-      player.y += gravity;
-    } else {
-      player.y = 450 - player.height; // Set player's Y value to the floor
-    }
-  
-    // Reset jump count if the player touches the ground
-    if (player.y === 450 - player.height && isJumping) {
-      player.jumpCount = 0;
-      isJumping = false;
-    }
-  
-    updatePlayerPosition();
-  
-    // Request next frame
-    requestAnimationFrame(update);
-}
-  
+    ctx.fillText("Lives: " + lives, 10, 30);
+    ctx.fillText("Score: " + score, 10, 60);
+  }
 
-// Handle keydown event
-function handleKeyDown(e) {
+  // Apply gravity to the player
+  if (player.y + player.height < 450) {
+    player.y += gravity;
+  } else {
+    player.y = 450 - player.height; // Set player's Y value to the floor
+  }
+
+  // Reset jump count if the player touches the ground
+  if (player.y === 450 - player.height && isJumping) {
+    player.jumpCount = 0;
+    isJumping = false;
+  }
+
+  updatePlayerPosition();
+
+  // Request next frame
+  requestAnimationFrame(update);
+}
+
+// Handle key press event
+function handleKeyPress(e) {
   if (e.key === "ArrowLeft") {
     keys.ArrowLeft = true;
   } else if (e.key === "ArrowRight") {
@@ -205,8 +174,8 @@ function handleKeyDown(e) {
   }
 }
 
-// Handle keyup event
-function handleKeyUp(e) {
+// Handle key release event
+function handleKeyRelease(e) {
   if (e.key === "ArrowLeft") {
     keys.ArrowLeft = false;
   } else if (e.key === "ArrowRight") {
@@ -219,41 +188,14 @@ function updatePlayerPosition() {
   if (keys.ArrowLeft && player.x > 0) {
     player.x -= player.speed; // Move left
     if (player.x <= player.speed) {
-      var scrollDistance = Math.min(player.speed, -backgroundImageX); // Calculate the scroll distance
-      backgroundImageX += scrollDistance; // Scroll background to the right
+      var scrollDistance = Math.min(player.speed, -backgroundX); // Calculate the scroll distance
+      backgroundX += scrollDistance; // Scroll background to the right
     }
   } else if (keys.ArrowRight && player.x + player.width < canvas.width) {
     player.x += player.speed; // Move right
-    if (player.x >= canvas.width - player.speed - player.width) {
-      var scrollDistance = Math.min(
-        player.speed,
-        backgroundImage.width + backgroundImageX - canvas.width
-      ); // Calculate the scroll distance
-      backgroundImageX -= scrollDistance; // Scroll background to the left
+    if (player.x + player.width >= canvas.width - player.speed) {
+      var scrollDistance = Math.min(player.speed, backgroundX + canvas.width - backgroundImage.width); // Calculate the scroll distance
+      backgroundX -= scrollDistance; // Scroll background to the left
     }
-  } else if (player.x <= 0 && keys.ArrowLeft) {
-    var scrollDistance = Math.min(player.speed, -backgroundImageX); // Calculate the scroll distance
-    backgroundImageX += scrollDistance; // Scroll background to the right
-  } else if (player.x + player.width >= canvas.width && keys.ArrowRight) {
-    var scrollDistance = Math.min(
-      player.speed,
-      backgroundImage.width + backgroundImageX - canvas.width
-    ); // Calculate the scroll distance
-    backgroundImageX -= scrollDistance; // Scroll background to the left
-  }
-
-  // Update maxPlayerX value when player reaches the border
-  if (player.x > maxPlayerX) {
-    maxPlayerX = player.x;
-  } else if (player.x < maxPlayerX - canvas.width) {
-    maxPlayerX = player.x + canvas.width;
-  }
-
-  // Prevent player from moving beyond the bottom of the canvas
-  if (player.y + player.height > canvas.height) {
-    player.y = canvas.height - player.height;
   }
 }
-
-// Generate a new coin every second
-setInterval(generateCoins, 1000);
